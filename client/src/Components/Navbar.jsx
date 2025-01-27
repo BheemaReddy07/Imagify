@@ -1,10 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../assets/assets";
 import { AppContext } from "../Context/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 const Navbar = () => { 
-  const {user,setUser} = useContext(AppContext)
+  const {user,setUser,setShowLogin} = useContext(AppContext)
   const navigate = useNavigate();
+
+
+ 
+
+
+
 
   return (
     <div className="flex items-center  justify-between py-4">
@@ -36,7 +42,7 @@ const Navbar = () => {
             >
               Pricing
             </p>
-            <button className="bg-zinc-800 text-white rounded-full px-7 sm:px-12 text-sm py-2">
+            <button onClick={()=>setShowLogin(true)} className="bg-zinc-800 text-white rounded-full px-7 sm:px-12 text-sm py-2">
               Login
             </button>
           </div>

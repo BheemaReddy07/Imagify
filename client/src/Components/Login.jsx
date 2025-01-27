@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { assets } from '../assets/assets';
-
+import { AppContext } from '../Context/AppContext';
+import { motion } from "motion/react"
 const Login = () => {
+
+    useEffect(()=>{
+        document.body.style.overflow = "hidden"  ;
+    
+        return ()=>{
+          document.body.style.overflow = 'unset';
+        }
+    
+      },[])
+    
+
+  const {setShowLogin}= useContext(AppContext)
+
   const [state, setState] = useState('Login');
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [otpSent, setOTPSent] = useState(false);
@@ -22,8 +36,8 @@ const Login = () => {
   };
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm bg-black/30">
-      <form onSubmit={handleSubmit} className="flex min-h-[80vh] items-center">
+    <div className=" fixed inset-0 z-10 flex items-center justify-center backdrop-blur-sm bg-black/30">
+      <motion.form initial={{opacity:0.2 ,y:50}} transition={{duration:0.3}} whileInView={{opacity:1,y:0}} viewport={{once:true}} onSubmit={handleSubmit} className="flex min-h-[80vh] items-center">
         <div className="relative flex flex-col gap-5 m-auto items-start p-8 min-w-[340px] sm:min-w-[400px] border rounded-2xl text-zinc-600 text-sm shadow-xl bg-white">
           {/* Cross Icon */}
           <img  
@@ -34,6 +48,7 @@ const Login = () => {
               setState('Login');
               setForgotPasswordMode(false);
               setOTPSent(false);
+              setShowLogin(false)
             }}
           />
 
@@ -192,7 +207,7 @@ const Login = () => {
             )}
           </p>
         </div>
-      </form>
+      </motion.form>
     </div>
   );
 };
