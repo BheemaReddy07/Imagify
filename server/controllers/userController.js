@@ -113,7 +113,7 @@ const verifyOTPandRegister = async (req,res) =>{
             verified:true
         })
         const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
-        res.json({success:true,token})
+        res.json({success:true,token,message:"Registration successful"})
     } catch (error) {
         console.log('Error in request otp :',error.message)
         res.json({success:false,message:error.message})
@@ -136,7 +136,7 @@ const loginUser  = async (req,res) =>{
         const isMatch = await bcrypt.compare(password,user.password)
         if(isMatch){
             const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
-            res.json({success:true,token})
+            res.json({success:true,token,message:"Login Successful"})
         }
         else{
             res.json({success:false,message:"Invalid Credentials"})
@@ -203,7 +203,7 @@ const resetPassword = async (req,res) =>{
         user.otpExpiration = null
         await user.save()
 
-        res.json({success:true,message:"message reset successfully"})
+        res.json({success:true,message:"password reset successfully"})
 
         
     } catch (error) {

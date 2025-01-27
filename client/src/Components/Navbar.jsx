@@ -2,10 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../assets/assets";
 import { AppContext } from "../Context/AppContext";
 import { Link, useNavigate } from "react-router-dom";
+import {toast} from 'react-toastify'
 const Navbar = () => { 
-  const {user,setUser,setShowLogin} = useContext(AppContext)
+  const {token,setToken,setShowLogin} = useContext(AppContext)
   const navigate = useNavigate();
 
+  const logout = () =>{
+    if(token){
+      toast.success("Logout Successfully")
+      setToken('')
+      localStorage.removeItem('token')
+    }
+  }
 
  
 
@@ -19,7 +27,7 @@ const Navbar = () => {
       </Link>
 
       <div>
-        {user ? (
+        {token ? (
           <div className="flex items-center justify-between gap-6">
             <button onClick={() => navigate("/buy")} className="flex items-center justify-between gap-2 bg-blue-100 rounded-full px-7 sm:px-6 py-2 hover:scale-105 transition-all duration-700 ">
               <img className="w-5" src={assets.credit_star} />
@@ -29,7 +37,7 @@ const Navbar = () => {
               <img className="w-10 drop-shadow" src={assets.profile_icon} />
               <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-12">
                 <ul className="list-none m-0 p-2 bg-white rounded-md text-sm">
-                    <li className="py-1 px-2 cursor-pointer pr-10">Logout</li>
+                    <li onClick={logout} className="py-1 px-2 cursor-pointer pr-10">Logout</li>
                 </ul>
               </div>
             </div>
