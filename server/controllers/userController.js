@@ -117,7 +117,7 @@ const verifyOTPandRegister = async (req,res) =>{
             otpExpiration:null,
             verified:true
         })
-        const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
+        const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:'7d'})
         res.json({success:true,token,message:"Registration successful"})
     } catch (error) {
         console.log('Error in request otp :',error.message)
