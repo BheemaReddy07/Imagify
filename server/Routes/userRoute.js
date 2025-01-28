@@ -9,7 +9,7 @@ userRouter.post('/register/verifyotp-register',verifyOTPandRegister)
 userRouter.post('/login',loginUser)
 userRouter.post('/forgot/request-otp',requestForgotPasswordOTP)
 userRouter.post('/forgot/reset',resetPassword)
-userRouter.post('/credits',userAuth,userCredits)
+userRouter.get('/credits',userAuth,userCredits)
 
 
 export default userRouter

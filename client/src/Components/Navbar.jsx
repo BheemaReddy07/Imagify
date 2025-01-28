@@ -4,7 +4,7 @@ import { AppContext } from "../Context/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 import {toast} from 'react-toastify'
 const Navbar = () => { 
-  const {token,setToken,setShowLogin} = useContext(AppContext)
+  const {token,setToken,setShowLogin,credits} = useContext(AppContext)
   const navigate = useNavigate();
 
   const logout = () =>{
@@ -31,7 +31,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between gap-6">
             <button onClick={() => navigate("/buy")} className="flex items-center justify-between gap-2 bg-blue-100 rounded-full px-7 sm:px-6 py-2 hover:scale-105 transition-all duration-700 ">
               <img className="w-5" src={assets.credit_star} />
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Credits left:4</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Credits left:{credits}</p>
             </button>
             <div className="relative group">
               <img className="w-10 drop-shadow" src={assets.profile_icon} />
