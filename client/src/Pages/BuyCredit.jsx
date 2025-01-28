@@ -2,8 +2,37 @@ import React, { useContext } from 'react'
 import { assets, plans } from '../assets/assets'
 import { AppContext } from '../Context/AppContext'
 import { motion } from "motion/react"
+import { useNavigate } from 'react-router-dom'
+import {toast} from  'react-toastify'
+import axios from 'axios'
 const BuyCredit = () => {
- const {user} = useContext(AppContext)
+ const {token,backendurl,loadCreditsData,setShowLogin} = useContext(AppContext)
+ const navigate = useNavigate()
+
+ const paymentStripe = async (planId) => {
+  try {
+    if (!token) {
+      setShowLogin(true);
+      return;
+    }
+
+    const { data } = await axios.post(
+      `${backendurl}/api/user/place`,
+      { planId },
+      { headers: { token } }
+    );
+
+    if (data.success) {
+      window.location.replace(data.session_url);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error(error.message);
+    console.error(error.message);
+  }
+};
+
 
 
   return (
@@ -20,7 +49,7 @@ const BuyCredit = () => {
                   <p className='text-sm'>{item.desc}</p>
                   <p className='mt-6'><span className='text-3xl font-medium'> ₹{item.price}</span>/{item.credits} credits</p>
                    
-                <button className='w-full bg-gray-800 text-white px-8 py-2 rounded-lg mt-8 text-sm min-w-52'>{user ? 'Purchase' : 'Get Started'}</button>
+                <button   onClick={()=>paymentStripe(item.id)} className='w-full bg-gray-800 text-white px-8 py-2 rounded-lg mt-8 text-sm min-w-52'>{token ? 'Purchase' : 'Get Started'}</button>
 
                 </div>
               ))

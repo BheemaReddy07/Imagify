@@ -10,6 +10,7 @@ import Footer from './Components/Footer'
 import Login from './Components/Login'
 import { useContext } from 'react'
 import { AppContext } from './Context/AppContext'
+import Verify from './Pages/Verify'
  const App = () => {
   const {setShowLogin,showLogin}= useContext(AppContext)
 
@@ -24,6 +25,7 @@ import { AppContext } from './Context/AppContext'
           <Route path='/' element={<Home />} />
           <Route path='/buy' element={<BuyCredit />} />
           <Route path='/result' element={<Result />} />
+          <Route path='/verify' element={<Verify />} />
         </Routes>
         <Footer />
      </div>

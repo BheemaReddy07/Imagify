@@ -275,17 +275,17 @@ const paymentStripe = async (req, res) => {
     switch (planId) {
       case "Basic":
         plan = "Basic";
-        credits = 100;
+        credits = 25;
         amount = 50;
         break;
       case "Advanced":
         plan = "Advanced";
-        credits = 500;
+        credits = 70;
         amount = 100;
         break;
       case "Business":
         plan = "Business";
-        credits = 5000;
+        credits = 350;
         amount = 500;
         break;
       default:
