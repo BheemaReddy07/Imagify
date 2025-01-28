@@ -4,6 +4,11 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import nodemailer from 'nodemailer'
 import validator from 'validator'
+import Stripe from 'stripe'
+import transactionModel from "../models/transactionModel.js";
+
+
+const currency = process.env.CURRENCY
 
 
 //function to generate the otp
@@ -248,4 +253,128 @@ const userCredits = async (req,res) =>{
 }
 
 
-export {requestOTP ,verifyOTPandRegister,loginUser,requestForgotPasswordOTP , resetPassword,userCredits}
+
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// API for Stripe payment
+const paymentStripe = async (req, res) => {
+  try {
+    const { userId, planId } = req.body;
+
+    if (!userId || !planId) {
+      return res.json({ success: false, message: "Missing Details" });
+    }
+
+    const userData = await userModel.findById(userId);
+    if (!userData) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    let credits, plan, amount;
+    switch (planId) {
+      case "Basic":
+        plan = "Basic";
+        credits = 100;
+        amount = 50;
+        break;
+      case "Advanced":
+        plan = "Advanced";
+        credits = 500;
+        amount = 100;
+        break;
+      case "Business":
+        plan = "Business";
+        credits = 5000;
+        amount = 500;
+        break;
+      default:
+        return res.json({ success: false, message: "Plan not found" });
+    }
+
+    const date = Date.now();
+    const transactionData = { userId, plan, amount, credits, date };
+    const newTransaction = await transactionModel.create(transactionData);
+
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: "inr", // Define your currency
+            product_data: {
+              name: plan,
+              description: `${credits} credits`,
+            },
+            unit_amount: amount * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.FRONTEND_URL}/verify?success=true&transactionId=${newTransaction._id}`,
+      cancel_url: `${process.env.FRONTEND_URL}/verify?success=false&transactionId=${newTransaction._id}`,
+    });
+
+    res.json({ success: true, session_url: session.url });
+  } catch (error) {
+    console.error(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const verifyPayment = async (req, res) => {
+    try {
+      const { transactionId, success } = req.body;
+  
+      if (!transactionId) {
+        return res.status(400).json({ success: false, message: "Missing transaction ID" });
+      }
+  
+      const transaction = await transactionModel.findById(transactionId);
+  
+      if (!transaction) {
+        return res.status(404).json({ success: false, message: "Transaction not found" });
+      }
+  
+      const userData = await userModel.findById(transaction.userId);
+  
+      if (!userData) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+  
+      if (success) {
+        transaction.payment = true;
+        await transaction.save();
+  
+        // Safely parse and validate the existing credit balance
+        const currentBalance = Number(userData.creditBalance); // Ensure it's a number
+        const transactionCredits = Number(transaction.credits); // Ensure it's a number
+  
+        if (isNaN(currentBalance) || isNaN(transactionCredits)) {
+          return res.status(500).json({ success: false, message: "Invalid data for credit calculation" });
+        }
+  
+        // Calculate the new balance
+        const newCredits = currentBalance + transactionCredits;
+  
+        // Update the user's credit balance
+        await userModel.findByIdAndUpdate(
+          userData._id,
+          { creditBalance: newCredits },
+          { new: true } // Return the updated document
+        );
+  
+        return res.status(200).json({ success: true, message: "Payment verified successfully" });
+      }
+  
+      return res.status(400).json({ success: false, message: "Payment not completed" });
+    } catch (error) {
+      console.error(error.message);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  };
+  
+  
+
+
+export {requestOTP ,verifyOTPandRegister,loginUser,requestForgotPasswordOTP , resetPassword,userCredits,paymentStripe,verifyPayment}
