@@ -10,7 +10,7 @@ const AppContextProvider = (props) =>{
      const backendurl = import.meta.env.VITE_BACKEND_URL
      const [token, setToken] = useState(localStorage.getItem("token") ? localStorage.getItem("token") : '' );
    
-  const [showLogin, setShowLogin] = useState(!localStorage.getItem("token"));
+  const [showLogin, setShowLogin] = useState(false);
   const [credits, setCredits] = useState(false);
 
 
