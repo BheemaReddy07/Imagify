@@ -157,6 +157,7 @@ const Login = () => {
               className="border border-zinc-300 rounded w-full p-2 mt-1"
               type="text"
               value={name}
+              placeholder="Name"
               onChange={(e) => setName(e.target.value)}
               required
             />
@@ -169,6 +170,7 @@ const Login = () => {
             className="border border-zinc-300 rounded w-full p-2 mt-1"
             type="email"
             value={email}
+            placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             required
           />
@@ -182,6 +184,7 @@ const Login = () => {
               className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               type={showPassword ? 'text' : 'password'}
               value={password}
+              placeholder={forgotPasswordMode?"New Password":"Password"}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -208,6 +211,7 @@ const Login = () => {
                 className="border border-zinc-300 rounded w-full p-2 mt-1 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 type={showRePassword ? 'text' : 'password'}
                 value={repassword}
+                placeholder={forgotPasswordMode?"New Re-Password":"Re-Password"}
                 onChange={(e) => setRePassword(e.target.value)}
                 required
               />
@@ -234,6 +238,7 @@ const Login = () => {
               className="border border-zinc-300 rounded w-full p-2 mt-1"
               type="text"
               value={otp}
+              placeholder="OTP"
               onChange={(e) => setOTP(e.target.value)}
               required
             />

@@ -46,7 +46,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between gap-2 sm:gap-5">
             <p
               onClick={() => navigate("/buy")}
-              className="text-sm text-gray-500 cursor-pointer"
+              className="text-sm text-white cursor-pointer border bg-blue-400 rounded-full px-6 py-2 text-semibold"
             >
               Pricing
             </p>
