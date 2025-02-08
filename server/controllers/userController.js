@@ -324,56 +324,66 @@ const paymentStripe = async (req, res) => {
 
 const verifyPayment = async (req, res) => {
     try {
-      const { transactionId, success } = req.body;
-  
-      if (!transactionId) {
-        return res.status(400).json({ success: false, message: "Missing transaction ID" });
-      }
-  
-      const transaction = await transactionModel.findById(transactionId);
-  
-      if (!transaction) {
-        return res.status(404).json({ success: false, message: "Transaction not found" });
-      }
-  
-      const userData = await userModel.findById(transaction.userId);
-  
-      if (!userData) {
-        return res.status(404).json({ success: false, message: "User not found" });
-      }
-  
-      if (success) {
-        transaction.payment = true;
-        await transaction.save();
-  
-        // Safely parse and validate the existing credit balance
-        const currentBalance = Number(userData.creditBalance); // Ensure it's a number
-        const transactionCredits = Number(transaction.credits); // Ensure it's a number
-  
-        if (isNaN(currentBalance) || isNaN(transactionCredits)) {
-          return res.status(500).json({ success: false, message: "Invalid data for credit calculation" });
+        
+        const { transactionId, success } = req.body;
+
+        if (!transactionId) {
+            return res.status(400).json({ success: false, message: "Missing transaction ID" });
         }
-  
-        // Calculate the new balance
-        const newCredits = currentBalance + transactionCredits;
-  
-        // Update the user's credit balance
-        await userModel.findByIdAndUpdate(
-          userData._id,
-          { creditBalance: newCredits },
-          { new: true } // Return the updated document
-        );
-  
-        return res.status(200).json({ success: true, message: "Payment verified successfully" });
-      }
-  
-      return res.status(400).json({ success: false, message: "Payment not completed" });
+
+        const transaction = await transactionModel.findById(transactionId);
+        
+        if (!transaction) {
+            return res.status(404).json({ success: false, message: "Transaction not found" });
+        }
+
+        
+
+        const userData = await userModel.findById(transaction.userId);
+
+        if (!userData) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+         
+
+        // Check if payment is already verified
+        if (transaction.payment) {
+        
+            return res.status(200).json({ success: true, message: "Payment already verified" });
+        }
+
+        if (success) {
+             
+            transaction.payment = true;
+            await transaction.save();
+
+            const currentBalance = Number(userData.creditBalance);
+            const transactionCredits = Number(transaction.credits);
+
+            if (isNaN(currentBalance) || isNaN(transactionCredits)) {
+                return res.status(500).json({ success: false, message: "Invalid data for credit calculation" });
+            }
+
+            const newCredits = currentBalance + transactionCredits;
+
+           
+            await userModel.findByIdAndUpdate(
+                userData._id,
+                { creditBalance: newCredits },
+                { new: true }
+            );
+
+           
+            return res.status(200).json({ success: true, message: "Payment verified successfully" });
+        }
+
+        return res.status(400).json({ success: false, message: "Payment not completed" });
     } catch (error) {
-      console.error(error.message);
-      return res.status(500).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
-  };
-  
+};
+
   
 
 

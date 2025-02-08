@@ -8,34 +8,56 @@ const Verify = () => {
   const [searchParams] = useSearchParams();
   const success = searchParams.get('success') === 'true';
   const transactionId = searchParams.get('transactionId');
-  const { backendurl, loadCreditBalance ,token} = useContext(AppContext);
+  const { backendurl, loadCreditBalance, token } = useContext(AppContext);
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
-    const verifyPayment = async () => {
-      try {
-        const { data } = await axios.post(`${backendurl}/api/user/verify-payment`, {
-          transactionId,
-          success,
-        },{headers:{token}});
+    let isMounted = true; // ✅ Prevent multiple API calls
 
-        if (data.success) {
-           
-          setIsVerified(true);
-          loadCreditBalance();
-        } else {
-          toast.error(data.message);
-          setIsVerified(false);
+    const verifyPayment = async () => {
+       
+
+      try {
+        const { data } = await axios.post(
+          `${backendurl}/api/user/verify-payment`,
+          { transactionId, success },
+          { headers: { token } }
+        );
+
+        if (isMounted) {
+          if (data.success) {
+            
+            setIsVerified(true);
+            loadCreditBalance();
+          } else {
+             
+            toast.error(data.message);
+            setIsVerified(false);
+          }
         }
       } catch (error) {
-        toast.error('Verification failed.');
-        console.error(error.message);
+        if (isMounted) {
+          
+          toast.error('Verification failed.');
+        }
       }
     };
 
     verifyPayment();
-  }, [backendurl, transactionId, success, loadCreditBalance]);
+
+    return () => {
+      isMounted = false; // ✅ Cleanup function
+    };
+  }, [backendurl, transactionId, success, loadCreditBalance, token]);
+
+  // ✅ Navigate only when isVerified becomes true
+  useEffect(() => {
+    if (isVerified) {
+      
+      navigate('/');
+    }
+  }, [isVerified, navigate]);
 
   if (!isVerified) {
     return (
@@ -43,10 +65,6 @@ const Verify = () => {
         <div className="w-[100px] h-[100px] border-4 border-gray-400 border-t-blue-500 rounded-full animate-spin"></div>
       </div>
     );
-  }
-   
-  if(isVerified){
-    navigate('/')
   }
 
   return (
