@@ -157,7 +157,7 @@ const Login = () => {
               className="border border-zinc-300 rounded w-full p-2 mt-1"
               type="text"
               value={name}
-              placeholder="Name"
+              placeholder="Enter Name"
               onChange={(e) => setName(e.target.value)}
               required
             />
@@ -170,7 +170,7 @@ const Login = () => {
             className="border border-zinc-300 rounded w-full p-2 mt-1"
             type="email"
             value={email}
-            placeholder="Email"
+            placeholder="Enter a Valid Email"
             onChange={(e) => setEmail(e.target.value)}
             required
           />
